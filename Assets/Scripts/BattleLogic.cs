@@ -23,21 +23,20 @@ public class BattleLogic : MonoBehaviour
 
     //Basic SFX for game events
     public AudioClip hurt, atack;
-    
 
 
-    private void Start()
+
+private void Start()
     {
-        //This will call the SpawnIn function when the game starts (currently does nothing)
-        SpawnIn();
+
+//This will call the SpawnIn function when the game starts (currently does nothing)
+SpawnIn();
 
         //This will repeat the Attack function once every four seconds indefinitely
         InvokeRepeating("Attack", 4, 4);
 
         //An example of how to write a string to the screen"
         //ouputLog.OutputText("A " + monsters[1].myName + " approaches!");
-        heroes[0].physicalArmour = 0;
-        monsters[1].physicalDamage = 0;
     }
 
     void SpawnIn()
@@ -52,7 +51,7 @@ public class BattleLogic : MonoBehaviour
         {
             GameObject spawn = Instantiate(enemySP[Random.Range(0, 3)], spawnPoints[enemySpawn]) as GameObject;
         }
-        
+
     }
 
     void Attack()
@@ -64,80 +63,99 @@ public class BattleLogic : MonoBehaviour
          * the requirements, you will need to modify this heavily based on the system you want to implement.
          */
 
-            int numbo = Random.Range(0, 1);
-            string log = null;
+        int numbo = Random.Range(0, 2);
+        string log = null;
 
         //Hero or monster hits based on a flat 50% chance
-        
 
-            //actually modifies damage value
-            //heroes[0].health -= monsters[1].damage;
 
-            heroes[0].physicalArmour -= monsters[1].physicalDamage;
-            heroes[0].magicArmour -= monsters[1].magicDamage;
-            monsters[1].physicalArmour -= heroes[0].physicalDamage;
-            monsters[1].magicArmour -= heroes[0].magicDamage;
+        //actually modifies damage value
+        //heroes[0].health -= monsters[1].damage;
+        //this is my damage calculation
 
-            monsters[1].totalDamage = (heroes[0].physicalArmour -= monsters[1].physicalDamage) + (heroes[0].magicArmour -= monsters[1].magicDamage);
-            heroes[0].totalDamage = (monsters[1].physicalArmour -= heroes[0].physicalDamage) + (monsters[1].magicArmour -= heroes[0].magicDamage);
 
         
         //determines who attacks first
-        if (numbo == 0) { 
-        //hero start
-        if (heroes[0].physicalArmour == 0)
+        if (numbo == 0) {
+            //hero start
+            int heroH = Random.Range(0, 2);
+            int monsterH = Random.Range(0, 2);
+            monsters[monsterH].physicalArmour -= heroes[heroH].physicalDamage;
+            monsters[monsterH].magicArmour -= heroes[heroH].magicDamage;
+            monsters[monsterH].totalDamage = (heroes[heroH].physicalArmour -= monsters[monsterH].physicalDamage) + (heroes[heroH].magicArmour -= monsters[monsterH].magicDamage);
+            heroes[heroH].health -= monsters[monsterH].physicalDamage;
+            if (heroes[heroH].physicalArmour == 0)
         {
-            heroes[0].health -= monsters[1].physicalDamage;
-        }
+                heroes[heroH].health -= monsters[monsterH].physicalDamage;
+            }
 
-        if (heroes[0].magicArmour == 0)
+        if (heroes[heroH].magicArmour == 0)
         {
-            heroes[0].health -= monsters[1].magicDamage;
+            heroes[heroH].health -= monsters[monsterH].magicDamage;
         }
         //HERO runs function controlling SFX and VFX
-        heroes[0].ShowDamage();
+        heroes[heroH].ShowDamage();
 
         //HERO writes the result to the output string
-        log = "The " + monsters[1].myName + " hits the " + heroes[0].myName + " for " + monsters[1].totalDamage + " damage! It has " + heroes[0].health + " HP remaining";
+        log = "The " + monsters[monsterH].myName + " hits the " + heroes[heroH].myName + " for " + monsters[monsterH].totalDamage + " damage! It has " + heroes[heroH].health + " HP remaining";
         }
-        else { 
-        //monster start
-        if (monsters[1].physicalArmour == 0)
+        else {
+            //monster start
+            int heroH = Random.Range(0, 2);
+            int monsterH = Random.Range(0, 2);
+            heroes[heroH].physicalArmour -= monsters[monsterH].physicalDamage;
+            heroes[heroH].magicArmour -= monsters[monsterH].magicDamage;
+
+
+
+            heroes[heroH].totalDamage = (monsters[monsterH].physicalArmour -= heroes[heroH].physicalDamage) + (monsters[monsterH].magicArmour -= heroes[heroH].magicDamage);
+            if (monsters[monsterH].physicalArmour == 0)
         {
-            monsters[1].health -= heroes[0].physicalDamage;
+            monsters[monsterH].health -= heroes[heroH].physicalDamage;
         }
 
-        if (monsters[1].magicArmour == 0)
+        if (monsters[monsterH].magicArmour == 0)
         {
-            monsters[1].health -= heroes[0].magicDamage;
+            monsters[monsterH].health -= heroes[heroH].magicDamage;
         }
         //MONSTER runs function controlling SFX and VFX
         monsters[1].ShowDamage();
 
         //MONSTER writes the result to the output string
-        log = "The " + heroes[0].myName + " hits the " + monsters[1].myName + " for " + monsters[1].totalDamage + " damage! It has " + monsters[1].health + " HP remaining";
+        log = "The " + heroes[heroH].myName + " hits the " + monsters[monsterH].myName + " for " + monsters[monsterH].totalDamage + " damage! It has " + monsters[monsterH].health + " HP remaining";
 
         }
 
         //These end the game if either character's hp drops below 0
-        if (monsters[1].health <= 0)
+        for (int i = 0; i < monsters.Count; i++)
         {
-            Destroy(monsters[1].gameObject);
-
-            log = "Victory! The " + monsters[1].myName + " has been defeated!";
-
-            //This must be called when combat finishes.
-            CancelInvoke();
+            //These end the game if either character's hp drops below 0
+            if (monsters[i].health <= 0)
+            {
+                if (monsters[i].gameObject.activeSelf)
+                {
+                    log = "Victory! The " + monsters[i].myName + " has been defeated!";
+                    monsters[i].gameObject.SetActive(false);
+                }
+                //This must be called when combat finishes.
+                CancelInvoke();
+            }
         }
-        else if (heroes[0].health <= 0)
+        for (int i = 0; i < heroes.Count; i++)
         {
-            Destroy(heroes[0].gameObject);
+            //These end the game if either character's hp drops below 0
+            if (heroes[i].health <= 0)
+            {
+                
 
-            log = "Defeat! The " + heroes[0].myName + " has been defeated!";
+                log = "Defeat! The " + heroes[i].myName + " has been defeated!";
+                heroes[i].gameObject.SetActive(false);
 
-            //This must be called when combat finishes.
-            CancelInvoke();
+                //This must be called when combat finishes.
+                CancelInvoke();
+            }
         }
+  
 
         //Writes the assigned string to the screen
         ouputLog.OutputText(log);
