@@ -1,11 +1,11 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class BattleLogic : MonoBehaviour
 {
     //TODO Change the following variables to arrays or lists
     public List<CharacterStats> heroes = new List<CharacterStats>();
+
     public List<CharacterStats> monsters = new List<CharacterStats>();
 
     //TODO Use the follwing spawn points as a reference point for where to spawn heroes and monsters respectively
@@ -19,30 +19,30 @@ public class BattleLogic : MonoBehaviour
 
     //TODO Create more prefabs below, to represent more classes/monsters that may be spawned
     public GameObject[] heroSP = new GameObject[4];
+
     public GameObject[] enemySP = new GameObject[4];
 
     //Basic SFX for game events
     public AudioClip hurt, atack;
 
-
-
-private void Start()
+    private void Start()
     {
-
-//This will call the SpawnIn function when the game starts (currently does nothing)
-SpawnIn();
+        //This will call the SpawnIn function when the game starts (currently does nothing)
+        SpawnIn();
 
         //This will repeat the Attack function once every four seconds indefinitely
         InvokeRepeating("Attack", 4, 4);
 
         //An example of how to write a string to the screen"
         //ouputLog.OutputText("A " + monsters[1].myName + " approaches!");
+        heroes[0].physicalArmour = 0;
+        monsters[1].physicalDamage = 0;
     }
 
-    void SpawnIn()
+    private void SpawnIn()
     {
-        //TODO Write your code to spawn in the prefabs, you will need to use arrays/lists and loops to accomplish this. 
-        for (int heroSpawn = 0; heroSpawn < 3; heroSpawn++)
+        //TODO Write your code to spawn in the prefabs, you will need to use arrays/lists and loops to accomplish this.
+        /*for (int heroSpawn = 0; heroSpawn < 3; heroSpawn++)
         {
             GameObject spawn = Instantiate(heroSP[Random.Range(0, 3)], spawnPoints[heroSpawn]) as GameObject;
         }
@@ -50,13 +50,20 @@ SpawnIn();
         for (int enemySpawn = 3; enemySpawn < 6; enemySpawn++)
         {
             GameObject spawn = Instantiate(enemySP[Random.Range(0, 3)], spawnPoints[enemySpawn]) as GameObject;
-        }
+        }*/
 
+        for (int i = 0; i < 3; i++)
+        {
+            GameObject heroSpawn = Instantiate(heroSP[i], spawnPoints[i]) as GameObject;
+            GameObject monsterSpawn = Instantiate(enemySP[i], spawnPoints[i + 3]) as GameObject;
+
+            heroes[i] = heroSpawn.GetComponent<CharacterStats>();
+            monsters[i] = monsterSpawn.GetComponent<CharacterStats>();
+        }
     }
 
-    void Attack()
+    private void Attack()
     {
-
         //TODO Rewrite the code below to work for three heroes & three monsters (choosing one per side each round)
 
         /* The following code serves as an example of combat, but it is far too simplistic and does not meet all
@@ -68,94 +75,125 @@ SpawnIn();
 
         //Hero or monster hits based on a flat 50% chance
 
-
         //actually modifies damage value
         //heroes[0].health -= monsters[1].damage;
-        //this is my damage calculation
 
-
-        
-        //determines who attacks first
-        if (numbo == 0) {
-            //hero start
-            int heroH = Random.Range(0, 2);
-            int monsterH = Random.Range(0, 2);
-            monsters[monsterH].physicalArmour -= heroes[heroH].physicalDamage;
-            monsters[monsterH].magicArmour -= heroes[heroH].magicDamage;
-            monsters[monsterH].totalDamage = (heroes[heroH].physicalArmour -= monsters[monsterH].physicalDamage) + (heroes[heroH].magicArmour -= monsters[monsterH].magicDamage);
-            heroes[heroH].health -= monsters[monsterH].physicalDamage;
-            if (heroes[heroH].physicalArmour == 0)
+        //monsters attack
+        if (numbo == 0)
         {
-                heroes[heroH].health -= monsters[monsterH].physicalDamage;
+            int i = Random.Range(0, monsters.Count);
+            while (!monsters[i].gameObject.activeSelf)
+            {
+                i = Random.Range(0, monsters.Count);
             }
 
-        if (heroes[heroH].magicArmour == 0)
+            int heroToAttack = Random.Range(0, heroes.Count);
+            while (!heroes[heroToAttack].gameObject.activeSelf)
+            {
+                heroToAttack = Random.Range(0, heroes.Count);
+            }
+
+            //damage calculation
+            int physDmg = monsters[i].physicalDamage - heroes[heroToAttack].physicalArmour;
+            if (physDmg < 0) physDmg = 0;
+            int magDmg = monsters[i].physicalDamage - heroes[heroToAttack].physicalArmour;
+            if (magDmg < 0) magDmg = 0;
+
+            monsters[i].totalDamage = physDmg + magDmg;
+
+            //reduce armors
+            heroes[heroToAttack].physicalArmour -= monsters[i].physicalDamage;
+            if (heroes[heroToAttack].physicalArmour < 0) heroes[heroToAttack].physicalArmour = 0;
+            heroes[heroToAttack].magicArmour -= monsters[i].magicDamage;
+            if (heroes[heroToAttack].magicArmour < 0) heroes[heroToAttack].magicArmour = 0;
+
+            //reduce hp of hero
+            heroes[heroToAttack].health -= monsters[i].totalDamage;
+            log = "The " + monsters[i].myName + " hits the " + heroes[heroToAttack].myName + " for " +
+                monsters[i].totalDamage + " damage! It has " + heroes[heroToAttack].health + " HP remaining";
+        }
+        //heroes attack
+        else
         {
-            heroes[heroH].health -= monsters[monsterH].magicDamage;
-        }
-        //HERO runs function controlling SFX and VFX
-        heroes[heroH].ShowDamage();
+            int i = Random.Range(0, heroes.Count);
+            while (!heroes[i].gameObject.activeSelf)
+            {
+                Random.Range(0, heroes.Count);
+            }
 
-        //HERO writes the result to the output string
-        log = "The " + monsters[monsterH].myName + " hits the " + heroes[heroH].myName + " for " + monsters[monsterH].totalDamage + " damage! It has " + heroes[heroH].health + " HP remaining";
-        }
-        else {
-            //monster start
-            int heroH = Random.Range(0, 2);
-            int monsterH = Random.Range(0, 2);
-            heroes[heroH].physicalArmour -= monsters[monsterH].physicalDamage;
-            heroes[heroH].magicArmour -= monsters[monsterH].magicDamage;
+            int monsterToAttack = Random.Range(0, monsters.Count);
+            while (!monsters[monsterToAttack].gameObject.activeSelf)
+            {
+                monsterToAttack = Random.Range(0, monsters.Count);
+            }
 
+            //damage calculation
+            int physDmg = heroes[i].physicalDamage - monsters[monsterToAttack].physicalArmour;
+            if (physDmg < 0) physDmg = 0;
+            int magDmg = heroes[i].magicDamage - monsters[monsterToAttack].magicArmour;
+            if (magDmg < 0) magDmg = 0;
 
+            heroes[i].totalDamage = physDmg + magDmg;
 
-            heroes[heroH].totalDamage = (monsters[monsterH].physicalArmour -= heroes[heroH].physicalDamage) + (monsters[monsterH].magicArmour -= heroes[heroH].magicDamage);
-            if (monsters[monsterH].physicalArmour == 0)
-        {
-            monsters[monsterH].health -= heroes[heroH].physicalDamage;
-        }
+            //reduce armor
+            monsters[monsterToAttack].physicalArmour -= heroes[i].physicalDamage;
+            if (monsters[monsterToAttack].physicalArmour < 0) monsters[monsterToAttack].physicalArmour = 0;
+            monsters[monsterToAttack].magicArmour -= heroes[i].magicDamage;
+            if (monsters[monsterToAttack].magicArmour < 0) monsters[monsterToAttack].magicArmour = 0;
 
-        if (monsters[monsterH].magicArmour == 0)
-        {
-            monsters[monsterH].health -= heroes[heroH].magicDamage;
-        }
-        //MONSTER runs function controlling SFX and VFX
-        monsters[1].ShowDamage();
-
-        //MONSTER writes the result to the output string
-        log = "The " + heroes[heroH].myName + " hits the " + monsters[monsterH].myName + " for " + monsters[monsterH].totalDamage + " damage! It has " + monsters[monsterH].health + " HP remaining";
-
+            //reduces hp of monster
+            heroes[i].ShowDamage();
+            monsters[monsterToAttack].health -= heroes[i].totalDamage;
+            log = "The " + heroes[i].myName + " hits the " + monsters[monsterToAttack].myName + " for " +
+                heroes[i].totalDamage + " damage! It has " + monsters[monsterToAttack].health + " HP remaining";
         }
 
-        //These end the game if either character's hp drops below 0
+        bool allDead = true;
         for (int i = 0; i < monsters.Count; i++)
         {
-            //These end the game if either character's hp drops below 0
-            if (monsters[i].health <= 0)
+            if (monsters[i].gameObject.activeSelf)
             {
-                if (monsters[i].gameObject.activeSelf)
+                //These end the game if either character's hp drops below 0
+                if (monsters[i].health <= 0)
                 {
-                    log = "Victory! The " + monsters[i].myName + " has been defeated!";
+                    log = "The " + monsters[i].myName + " has been defeated!";
                     monsters[i].gameObject.SetActive(false);
                 }
-                //This must be called when combat finishes.
-                CancelInvoke();
+                else
+                {
+                    allDead = false;
+                }
             }
         }
+
+        if (allDead)
+        {
+            log = "Victory! The lair of monsters has been cleansed!";
+            CancelInvoke();
+        }
+
+        allDead = true;
         for (int i = 0; i < heroes.Count; i++)
         {
-            //These end the game if either character's hp drops below 0
-            if (heroes[i].health <= 0)
+            if (heroes[i].gameObject.activeSelf)
             {
-                
-
-                log = "Defeat! The " + heroes[i].myName + " has been defeated!";
-                heroes[i].gameObject.SetActive(false);
-
-                //This must be called when combat finishes.
-                CancelInvoke();
+                if (heroes[i].health <= 0)
+                {
+                    log = "The " + heroes[i].myName + " has fallen!";
+                    heroes[i].gameObject.SetActive(false);
+                }
+                else
+                {
+                    allDead = false;
+                }
             }
         }
-  
+
+        if (allDead)
+        {
+            log = "Defeat! All the heroes have vanquished!";
+            CancelInvoke();
+        }
 
         //Writes the assigned string to the screen
         ouputLog.OutputText(log);
