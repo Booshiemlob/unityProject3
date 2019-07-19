@@ -180,6 +180,8 @@ public class BattleLogic : MonoBehaviour
                 if (heroes[i].health <= 0)
                 {
                     log = "The " + heroes[i].myName + " has fallen!";
+                    //just so the monsters can die during the battle without having to code any death animations etc
+                    //unity's garbage collector uses lots of resources and that if a fight were to go twice it is much more efficient to reuse the same gameObjects 
                     heroes[i].gameObject.SetActive(false);
                 }
                 else
