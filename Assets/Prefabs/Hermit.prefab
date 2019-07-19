@@ -98,8 +98,8 @@ MonoBehaviour:
   health: 20
   physicalDamage: 1
   magicDamage: 5
-  physicalArmour: 2
-  magicArmour: 2
+  physicalArmour: 3
+  magicArmour: 3
   totalDamage: 0
 --- !u!82 &3231068820689088201
 AudioSource:

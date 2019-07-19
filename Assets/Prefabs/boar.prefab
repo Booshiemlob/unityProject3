@@ -97,9 +97,9 @@ MonoBehaviour:
   mySprite: {fileID: 21300000, guid: 8481d28c453caad448d018331a15d6c1, type: 3}
   health: 15
   physicalDamage: 8
-  magicDamage: 2
-  physicalArmour: 1
-  magicArmour: 1
+  magicDamage: 0
+  physicalArmour: 2
+  magicArmour: 2
   totalDamage: -15
 --- !u!82 &-8701320077035447554
 AudioSource:

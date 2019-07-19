@@ -95,8 +95,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myName: Archer
   mySprite: {fileID: 21300000, guid: 17df03b89e74d174dacc0c803626967f, type: 3}
-  health: 30
-  physicalDamage: 8
+  health: 20
+  physicalDamage: 10
   magicDamage: 0
   physicalArmour: 1
   magicArmour: 1

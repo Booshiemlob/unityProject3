@@ -95,11 +95,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myName: Wizard
   mySprite: {fileID: 21300000, guid: 17df03b89e74d174dacc0c803626967f, type: 3}
-  health: 30
+  health: 22
   physicalDamage: 0
   magicDamage: 10
-  physicalArmour: 3
-  magicArmour: 3
+  physicalArmour: 2
+  magicArmour: 2
   totalDamage: 0
 --- !u!82 &2358262649755519928
 AudioSource:
