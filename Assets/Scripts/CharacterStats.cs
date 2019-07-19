@@ -8,10 +8,12 @@ public class CharacterStats : MonoBehaviour
     public string myName;
     public Sprite mySprite;
     public int health;
-    public int damage;
-    public int armour;
-    public int magicResistiance;
-    public int spellDamage;
+    public int physicalDamage;
+    public int magicDamage;
+    public int physicalArmour;
+    public int magicArmour;
+    //purely for outputting total damage in one clean number
+    public int totalDamage;
 
 
 
