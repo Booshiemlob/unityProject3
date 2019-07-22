@@ -18,9 +18,9 @@ public class BattleLogic : MonoBehaviour
     public WriteText ouputLog;
 
     //TODO Create more prefabs below, to represent more classes/monsters that may be spawned
-    public GameObject[] heroSP = new GameObject[4];
+    public GameObject[] heroSP;
 
-    public GameObject[] enemySP = new GameObject[4];
+    public GameObject[] enemySP;
 
     //Basic SFX for game events
     public AudioClip hurt, atack;
@@ -42,7 +42,9 @@ public class BattleLogic : MonoBehaviour
     private void SpawnIn()
     {
         //TODO Write your code to spawn in the prefabs, you will need to use arrays/lists and loops to accomplish this.
-        /*for (int heroSpawn = 0; heroSpawn < 3; heroSpawn++)
+        
+		//Commemnted out because this is for random and I wanted to spawn specific units rather than randomly from an array of enemies and heroes.
+		/*for (int heroSpawn = 0; heroSpawn < 3; heroSpawn++)
         {
             GameObject spawn = Instantiate(heroSP[Random.Range(0, 3)], spawnPoints[heroSpawn]) as GameObject;
         }
@@ -108,6 +110,7 @@ public class BattleLogic : MonoBehaviour
             if (heroes[heroToAttack].magicArmour < 0) heroes[heroToAttack].magicArmour = 0;
 
             //reduce hp of hero
+			heroes[heroToAttack].ShowDamage();
             heroes[heroToAttack].health -= monsters[i].totalDamage;
             log = "The " + monsters[i].myName + " hits the " + heroes[heroToAttack].myName + " for " +
                 monsters[i].totalDamage + " damage! It has " + heroes[heroToAttack].health + " HP remaining";
@@ -142,7 +145,7 @@ public class BattleLogic : MonoBehaviour
             if (monsters[monsterToAttack].magicArmour < 0) monsters[monsterToAttack].magicArmour = 0;
 
             //reduces hp of monster
-            heroes[i].ShowDamage();
+            monsters[monsterToAttack].ShowDamage();
             monsters[monsterToAttack].health -= heroes[i].totalDamage;
             log = "The " + heroes[i].myName + " hits the " + monsters[monsterToAttack].myName + " for " +
                 heroes[i].totalDamage + " damage! It has " + monsters[monsterToAttack].health + " HP remaining";
