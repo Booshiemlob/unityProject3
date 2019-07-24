@@ -83,11 +83,7 @@ public class BattleLogic : MonoBehaviour
         //monsters attack
         if (numbo == 0)
         {
-            int i = Random.Range(0, monsters.Count);
-            while (!monsters[i].gameObject.activeSelf)
-            {
-                i = Random.Range(0, monsters.Count);
-            }
+            int i = Random.Range(0, monsters.Count);         
 
             int heroToAttack = Random.Range(0, heroes.Count);
             while (!heroes[heroToAttack].gameObject.activeSelf)
@@ -118,17 +114,9 @@ public class BattleLogic : MonoBehaviour
         //heroes attack
         else
         {
-            int i = Random.Range(0, heroes.Count);
-            while (!heroes[i].gameObject.activeSelf)
-            {
-                Random.Range(0, heroes.Count);
-            }
-
+            int i = Random.Range(0, heroes.Count);          
             int monsterToAttack = Random.Range(0, monsters.Count);
-            while (!monsters[monsterToAttack].gameObject.activeSelf)
-            {
-                monsterToAttack = Random.Range(0, monsters.Count);
-            }
+           
 
             //damage calculation
             int physDmg = heroes[i].physicalDamage - monsters[monsterToAttack].physicalArmour;
@@ -154,19 +142,19 @@ public class BattleLogic : MonoBehaviour
         bool allDead = true;
         for (int i = 0; i < monsters.Count; i++)
         {
-            if (monsters[i].gameObject.activeSelf)
+            CharacterStats currentMonster = monsters[i];
+            if (monsters[i].health <= 0)
             {
-                //These end the game if either character's hp drops below 0
-                if (monsters[i].health <= 0)
-                {
-                    log = "The " + monsters[i].myName + " has been defeated!";
-                    monsters[i].gameObject.SetActive(false);
-                }
-                else
-                {
-                    allDead = false;
-                }
+                log = "The " + currentMonster.myName + " has been defeated!";
+                //monsters[i].gameObject.SetActive(false);
+                monsters.Remove(currentMonster);
+                Destroy(currentMonster.gameObject);
             }
+            else
+            {
+                allDead = false;
+            }
+            
         }
 
         if (allDead)
@@ -175,23 +163,26 @@ public class BattleLogic : MonoBehaviour
             CancelInvoke();
         }
 
+        
+
         allDead = true;
         for (int i = 0; i < heroes.Count; i++)
         {
-            if (heroes[i].gameObject.activeSelf)
+            CharacterStats currentHero = heroes[i];
+            if (heroes[i].health <= 0)
             {
-                if (heroes[i].health <= 0)
-                {
-                    log = "The " + heroes[i].myName + " has fallen!";
-                    //just so the monsters can die during the battle without having to code any death animations etc
-                    //unity's garbage collector uses lots of resources and that if a fight were to go twice it is much more efficient to reuse the same gameObjects 
-                    heroes[i].gameObject.SetActive(false);
-                }
-                else
-                {
-                    allDead = false;
-                }
+
+                heroes.Remove(currentHero);
+                Destroy(currentHero.gameObject);
+                log = "The " + currentHero.myName + " has fallen!";
+               
+                    
             }
+            else
+            {
+                allDead = false;
+            }
+          
         }
 
         if (allDead)
